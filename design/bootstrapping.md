@@ -28,12 +28,12 @@ language.
 
 `oftlisp-bi` is generated using a relatively simple script that essentially
 resolves `import`s the same way JavaScript dependency managers do -- by placing
-the `import`ed into a lambda which is executed at the top-level and returns its
-imports. The returned imports are then set in the global scope. After this is
-completed, macros are expanded. Note that this means that a macro that expands
-to an `import` is invalid. A final pass is then performed to lift all `import`s
-to the top of the output file and to ensure that they are all to `std` modules
-implemented by `oftlisp-bootstrap`.
+the `import`ed module into a lambda which is executed at the top-level and
+returns its imports. The returned imports are then set in the global scope.
+After this is completed, macros are expanded. Note that this means that a macro
+that expands to an `import` is invalid. A final pass is then performed to lift
+all `import`s to the top of the output file and to ensure that they are all to
+`std` modules implemented by `oftlisp-bootstrap`.
 
 ## Stage 3: `oftlispc`, Part One
 
