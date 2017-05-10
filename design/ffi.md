@@ -37,8 +37,8 @@ given types:
 
 ```
 foo-foo : (fn ffi-int ffi-int ffi-int)
-foo-bar : (fn (ffi-opaque foo-bar) ffi-int, ffi-ptrdiff-t)
-foo-baz : (fn ffi-size-t (ffi-opaque-bar foo-bar))
+foo-bar : (fn (ffi-struct foo-bar) ffi-int ffi-ptrdiff-t)
+foo-baz : (fn ffi-size-t (ffi-struct foo-bar))
 foo-EDOM : ffi-int
 foo-XYZZY : (ffi-pointer ffi-char)
 ```
