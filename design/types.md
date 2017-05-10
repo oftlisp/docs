@@ -21,7 +21,7 @@ There are seven numeric types in OftLisp: `fixnum`, `ratio`, `bigint`,
 `rational`, `float`, `complex`, and `crational`.
 
 `fixnum` is a machine-sized signed integer. It must be able to hold all values
-between `-2147483648` and `2147483647` (`-2^31` to `2^31 - 1`).	On 64-bit
+between `-2147483648` and `2147483647` (`-2^31` to `2^31 - 1`). On 64-bit
 platforms, it is typically able to hold all values between
 `-9223372036854775808` and `9223372036854775807` (`-2**63` to `2**63 - 1`).
 This should not be relied upon, however.
@@ -55,6 +55,72 @@ The `unit` value is the type of `nil`.
 
 ### Higher-Order Types
 
-TODO Lists, functions, tuples
+There are several types that are "higher-order"; that is, they take parameters.
+These include functions, lists, taggeds, and tuples.
+
+The function type constructor, written `fn`, takes at least one argument. All
+of the arguments must be types. The first argument it takes is the return type
+of the function, and all other arguments are the arguments a function takes,
+from left to right. For an example, the type of a function that takes two
+arguments, a string and a fixnum, and returns a float would be written
+`(fn float string fixnum)`.
+
+The `list` type constructor takes a single argument, which must be a type.
+
+The `tagged` type takes at least two arguments. The first argument is a literal
+symbol, while the others are types. A `tagged` is simply a variation of a tuple
+where every value starts with the same symbol. For example, the value
+`(foo 1 "bar" 2)` is a member of the type `(tagged foo fixnum string fixnum)`.
+
+The `tuple` type takes at least one argument. All of the arguments must be
+types.
 
 ## Opaque Types
+
+All types not representable in OftLisp source code as literals are termed
+"opaque." (The function type is a bit special; it is not considered opaque
+because the `fn` form is compiled as a function literal.) These include a
+number of data structures, FFI types, IO streams, and the like.
+
+## Miscellaneous Types
+
+The `any` type is the universal type; that is, all values may belong to it. It
+is *never* type-inferred, and requires a type annotation to be used.
+
+The `void` type is the empty type; that is, there are no values that belong to
+it. It may be inferred for the return type of a function that loops infinitely.
+
+TODO EXCEPTIONS?
+
+A special type constructor of note is the `union` type constructor, which takes
+two or more types as its arguments. Any value that is a member of any of the
+argument types is a member of the `union`ed type. This is useful as a way to
+implement algebraic datatypes; where `foo` is a zero-argument function that
+returns either a `fixnum` on success or a `string` on error, the return type of
+`foo` is written:
+
+```
+(union
+  (tagged ok fixnum)
+  (tagged err string))
+```
+
+Currently, it is required that the arguments of `union` all be `tagged` types.
+
+## Type Annotations
+
+The `::` special form is used to manually annotate the type of a variable. It
+also yields the value of that variable, allowing it to be used for returns. An
+example of its usage would be:
+
+```
+(defn foo (x y)
+  (:: x (union
+    (tagged bar ratio)
+    (tagged baz any)))
+  (:: y void)
+  (:: 0 complex))
+```
+
+This would cause `foo`'s type to be inferred as
+`(fn complex (union (tagged bar ratio) (tagged baz any)) void)`.
