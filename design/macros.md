@@ -1,6 +1,8 @@
 ---
-title: The OftLisp Macro System
+title: The Macro System
 ---
+
+# The Macro System
 
 OftLisp's macros are to a large degree based on those of Common Lisp; they use
 `defmacro`, and for now have no hygiene mechanism. The macro scoping rules are

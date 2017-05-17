@@ -1,8 +1,10 @@
 ---
-title: OftLisp Types
+title: The Type System
 ---
 
-# Overview
+# The Type System
+
+## Overview
 
 OftLisp uses a type system based on the Dialyzer type-checker for Erlang, with
 some additional complexity -- some values can have more than one type, due to
@@ -15,9 +17,9 @@ As a concrete example, the literal `("foo" "bar")` could have either
 numeric types, or 3-tuples where each member could be each of the seven numeric
 types. There would therefore be `7 + (7 * 7 * 7) = 350` possibilities.
 
-# Basic Types
+## Basic Types
 
-## Numeric Types
+### Numeric Types
 
 There are seven numeric types in OftLisp: `fixnum`, `ratio`, `bigint`,
 `rational`, `float`, `complex`, and `crational`.
@@ -42,7 +44,7 @@ normalized; that is, `(/ 2 4)` will result in `1/2` rather than `2/4`.
 
 `crational` is a complex number formed from two `rational`s.
 
-## Other Primitives
+### Other Primitive Types
 
 There are also several other primitive types: `string`, `symbol`, and `unit`.
 
@@ -55,7 +57,7 @@ create symbols over the course of the program's lifetime.
 
 The `unit` value is the type of `nil`.
 
-## Higher-Order Types
+### Higher-Order Types
 
 There are several types that are "higher-order"; that is, they take parameters.
 These include functions, lists, taggeds, and tuples.
@@ -77,14 +79,14 @@ where every value starts with the same symbol. For example, the value
 The `tuple` type takes at least one argument. All of the arguments must be
 types.
 
-# Opaque Types
+## Opaque Types
 
 All types not representable in OftLisp source code as literals are termed
 "opaque." (The function type is a bit special; it is not considered opaque
 because the `fn` form is compiled as a function literal.) These include a
 number of data structures, FFI types, IO streams, and the like.
 
-# Miscellaneous Types
+## Miscellaneous Types
 
 The `any` type is the universal type; that is, all values may belong to it. It
 is *never* type-inferred, and requires a type annotation to be used.
@@ -109,7 +111,7 @@ returns either a `fixnum` on success or a `string` on error, the return type of
 
 Currently, it is required that the arguments of `union` all be `tagged` types.
 
-# Type Annotations
+## Type Annotations
 
 The `::` special form is used to manually annotate the type of a variable. It
 also yields the value of that variable, allowing it to be used for returns. An

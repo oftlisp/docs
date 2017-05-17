@@ -2,6 +2,8 @@
 title: Bootstrapping OftLisp
 ---
 
+# Bootstrapping OftLisp
+
 ## Stage 1: `oftb`
 
 `oftb` is an interpreter written in Rust.
