@@ -61,7 +61,7 @@ ffi-bytes-to-string :: (fn string (ffi-pointer ffi-char) ffi-size-t)
 ## Low-Level Dynamic FFI Calls
 
 FFI in OftLisp may be implemented with the `std/ffi/raw` module. This module
-contains bindings to (libffi)[https://sourceware.org/libffi/] and libdl. A
+contains bindings to [libffi](https://sourceware.org/libffi/) and libdl. A
 typical FFI call might look something like:
 
 ```
