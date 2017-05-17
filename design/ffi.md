@@ -1,6 +1,8 @@
-# OftLisp FFI System
+---
+title: OftLisp FFI System
+---
 
-## High-level
+# High-level
 
 A high-level FFI package is provided at `std/ffi`. It supports the standard set
 of signed and unsigned integers of various sizes (1, 2, 4, and 8 bytes), as
@@ -54,7 +56,7 @@ ffi-cstr-to-string :: (fn string (ffi-pointer ffi-char))
 ffi-bytes-to-string :: (fn string (ffi-pointer ffi-char) ffi-size-t)
 ```
 
-## Low-Level Dynamic FFI Calls
+# Low-Level Dynamic FFI Calls
 
 FFI in OftLisp may be implemented with the `std/ffi/raw` module. This module
 contains bindings to (libffi)[https://sourceware.org/libffi/] and libdl. A
@@ -75,7 +77,7 @@ This interface is significantly slower than a compiled FFI call, but also much
 more flexible -- the name of the function need not statically be determined,
 and neither does the library they are loaded from, or their type.
 
-## Compiled FFI Calls
+# Compiled FFI Calls
 
 It is of course possible to compile an FFI call, and `oftc` does. In this case,
 the library will be dynamically *linked* instead of dynamically loaded. The
