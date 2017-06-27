@@ -6,11 +6,13 @@ title: Bootstrapping OftLisp
 
 ## Stage 1: `oftb`
 
-`oftb` is an interpreter written in Rust.
+`oftb` is an interpreter written in Haskell, which does *not* implement
+`std/ffi`.
 
 ## Stage 2: `ofti`
 
-`ofti` is an interpreter written in OftLisp.
+`ofti` is an interpreter written in OftLisp. It can be run without
+`std/ffi`.
 
 ## Stage 3: `oftc`
 

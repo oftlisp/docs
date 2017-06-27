@@ -11,7 +11,7 @@ of signed and unsigned integers of various sizes (1, 2, 4, and 8 bytes), as
 well as `size_t`, `ptrdiff_t`, etc. FFI definitions are performed in a
 `def-ffi` block:
 
-```
+```oftlisp
 (def-ffi foo
   (options
     (define "ENABLE_BAR") ; Add -DENABLE_BAR flag.
@@ -39,7 +39,7 @@ happens during macro expansion, so there's effectively zero runtime overhead.
 This results in the following symbols being defined at the top level, with the
 given types:
 
-```
+```oftlisp
 foo-foo :: (fn ffi-int ffi-int ffi-int)
 foo-bar :: (fn (ffi-struct foo-bar) ffi-int ffi-ptrdiff-t)
 foo-baz :: (fn ffi-size-t (ffi-struct foo-bar))
@@ -53,7 +53,7 @@ conversion functions, `ffi-cstr-to-string` and `ffi-bytes-to-string`. The
 former converts a null-terminated array of characters to a string. The latter
 also takes a length. They have the types:
 
-```
+```oftlisp
 ffi-cstr-to-string :: (fn string (ffi-pointer ffi-char))
 ffi-bytes-to-string :: (fn string (ffi-pointer ffi-char) ffi-size-t)
 ```
@@ -64,7 +64,7 @@ FFI in OftLisp may be implemented with the `std/ffi/raw` module. This module
 contains bindings to [libffi](https://sourceware.org/libffi/) and libdl. A
 typical FFI call might look something like:
 
-```
+```oftlisp
 (import std/ffi/raw (dlopen dlsym ffi-call make-cif))
 
 (def cif (make-cif 'double '(double)))

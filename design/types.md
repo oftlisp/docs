@@ -49,7 +49,7 @@ normalized; that is, `(/ 2 4)` will result in `1/2` rather than `2/4`.
 There are also several other primitive types: `string`, `symbol`, and `unit`.
 
 `string` is an immutable UTF-8 string. If a mutable string is wanted, look in
-`std/structures/cord`.
+`std/structures/rope`.
 
 `symbol` is a memoized string stored in a special heap, the symbol heap. These
 strings are not garbage collected, so care should be taken not to dynamically
@@ -92,9 +92,8 @@ The `any` type is the universal type; that is, all values may belong to it. It
 is *never* type-inferred, and requires a type annotation to be used.
 
 The `void` type is the empty type; that is, there are no values that belong to
-it. It may be inferred for the return type of a function that loops infinitely.
-
-TODO EXCEPTIONS?
+it. It may be inferred for the return type of a function that loops infinitely
+or panics.
 
 A special type constructor of note is the `union` type constructor, which takes
 two or more types as its arguments. Any value that is a member of any of the
@@ -103,7 +102,7 @@ implement algebraic datatypes; where `foo` is a zero-argument function that
 returns either a `fixnum` on success or a `string` on error, the return type of
 `foo` is written:
 
-```
+```oftlisp
 (union
   (tagged ok fixnum)
   (tagged err string))
@@ -117,8 +116,8 @@ The `::` special form is used to manually annotate the type of a variable. It
 also yields the value of that variable, allowing it to be used for returns. An
 example of its usage would be:
 
-```
-(defn foo (x y)
+```oftlisp
+(defn (foo x y)
   (:: x (union
     (tagged bar ratio)
     (tagged baz any)))
@@ -127,4 +126,10 @@ example of its usage would be:
 ```
 
 This would cause `foo`'s type to be inferred as
-`(fn complex (union (tagged bar ratio) (tagged baz any)) void)`.
+`(fn complex (union (tagged bar ratio) (tagged baz any)) void)`. This function
+could also be written as:
+
+```oftlisp
+(defn ((foo complex) (x (union (tagged bar ratio) (tagged baz any))) (y void))
+  0)
+```
