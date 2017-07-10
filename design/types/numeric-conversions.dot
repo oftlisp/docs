@@ -1,0 +1,20 @@
+digraph Conversions {
+	fixnum;
+	ratio;
+	bigint;
+	rational;
+	float;
+	crational;
+	complex;
+
+	fixnum -> ratio;
+	fixnum -> bigint;
+	fixnum -> float;
+	ratio -> float [style=dashed];
+	ratio -> rational;
+	bigint -> rational;
+	float -> complex;
+	rational -> crational;
+	rational -> float [style=dashed];
+	crational -> complex [style=dashed];
+}
