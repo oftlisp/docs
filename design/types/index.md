@@ -10,14 +10,16 @@ OftLisp uses a type system based on the Dialyzer type-checker for Erlang, with s
 In addition, numeric literals can have one of many types.
 
 As a concrete example, the literal `("foo" "bar")` could have either `(list string)` or `(tuple string string)` as its type.
-Even worse, the literal `(1 2 3)` could have 350 different types -- one for a list of each of the seven numeric types, or 3-tuples where each member could be each of the seven numeric types.
-There would therefore be `7 + (7 * 7 * 7) = 350` possibilities.
+Even worse, the literal `(1 2 3)` could have 350 different types -- one for a list of each of the eight numeric types, or 3-tuples where each member could be each of the eight numeric types.
+There would therefore be `8 + (8 * 8 * 8) = 520` possibilities.
 
 ## Basic Types
 
 ### Numeric Types
 
-There are seven numeric types in OftLisp: `fixnum`, `ratio`, `bigint`, `rational`, `float`, `complex`, and `crational`.
+There are eight numeric types in OftLisp: `byte`, `fixnum`, `ratio`, `bigint`, `rational`, `float`, `complex`, and `crational`.
+
+`byte` is an unsigned eight-bit integer.
 
 `fixnum` is a machine-sized signed integer.
 It must be able to hold all values between `-2147483648` and `2147483647` (`-2^31` to `2^31 - 1`).
