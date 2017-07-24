@@ -1,4 +1,5 @@
 digraph Conversions {
+	byte;
 	fixnum;
 	ratio;
 	bigint;
@@ -7,6 +8,7 @@ digraph Conversions {
 	crational;
 	complex;
 
+	byte -> fixnum;
 	fixnum -> ratio;
 	fixnum -> bigint;
 	fixnum -> float;

@@ -51,7 +51,7 @@ If a mutable string is wanted, look in `std/structures/rope`.
 `symbol` is a memoized string stored in a special heap, the symbol heap.
 These strings are not garbage collected, so care should be taken not to dynamically create symbols over the course of the program's lifetime.
 
-The `unit` value is the type of `nil`.
+The `unit` type is the type of `nil`.
 
 ### Higher-Order Types
 
