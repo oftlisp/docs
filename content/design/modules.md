@@ -1,6 +1,6 @@
----
-title: The Module System
----
++++
+title = "The Module System"
++++
 
 ## Locating Modules
 

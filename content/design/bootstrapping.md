@@ -1,8 +1,6 @@
----
-title: Bootstrapping OftLisp
----
-
-# Bootstrapping OftLisp
++++
+title = "Bootstrapping OftLisp"
++++
 
 ## Stage 1: `oftb`
 

@@ -1,0 +1,23 @@
+{% macro sidebar_section(section) %}
+	{% for p in section.pages | sort(attribute="title") %}
+	<li><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+	{% endfor %}
+	{% for s in section.subsections | sort(attribute="title") %}
+	<li>
+		<span>{{ s.title }}</span>
+		<ul>{{ self::sidebar_section(section=s) }}</ul>
+	</li>
+	{% endfor %}
+{% endmacro sidebar_section %}
+
+{% macro summarize_page(page) %}
+	<li class="title"><a href="{{ page.permalink }}">{{ page.title }}</a></li>
+{% endmacro summarize_page %}
+
+{% macro summarize_section(section) %}
+	<ul>
+		{% for p in section.pages | sort(attribute="title") %}
+		{{ self::summarize_page(page=p) }}
+		{% endfor %}
+	</ul>
+{% endmacro summarize_section %}

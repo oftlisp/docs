@@ -1,0 +1,8 @@
+{% extends "index.html" %}
+
+{% block title %}{{ page.title }} &ndash; {{ config.title }}{% endblock title %}
+
+{% block content %}
+<h1 class="title"><a href="{{ page.permalink }}">{{ page.title }}</a></h1>
+<article>{{ page.content | safe }}</article>
+{% endblock content %}

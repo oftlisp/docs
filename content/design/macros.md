@@ -1,14 +1,12 @@
----
-title: The Macro System
----
-
-# The Macro System
++++
+title = "The Macro System"
++++
 
 OftLisp's macros are to a large degree based on those of Common Lisp; they use `defmacro`, and for now have no hygiene mechanism.
 
 Macros are imported separately from standard declarations; see the [`modules.md`](modules.html) document for more details.
 
-# Macro Processing
+## Macro Processing
 
 When a module is loaded, the first thing that occurs is that the `module` form (including exports), `import-macros`, and `import` forms are processed.
 The modules specified in the `import-macros` and `import` forms are then loaded.

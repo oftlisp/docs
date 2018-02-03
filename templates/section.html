@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block title %}{{ section.title }}{% endblock title %}
+
+{% block content %}
+	<h1>{{ section.title }}</h1>
+	{% if section.subsections %}
+	<h2>Subsections</h2>
+	TODO
+	{% endif %}
+	{{ macros::summarize_section(section=section) }}
+{% endblock content %}
