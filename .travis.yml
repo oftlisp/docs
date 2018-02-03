@@ -2,7 +2,7 @@ language: generic
 os: linux
 
 install:
-  - curl -L https://github.com/Keats/gutenberg/releases/download/v0.3.0/gutenberg-v0.3.0-x86_64-unknown-linux-gnu.tar.gz | tar -xzfC /tmp
+  - curl -L https://github.com/Keats/gutenberg/releases/download/v0.3.0/gutenberg-v0.3.0-x86_64-unknown-linux-gnu.tar.gz | tar -xzC /tmp
 script:
   - /tmp/gutenberg build --base-url https://oftlisp.github.io/docs/
 deploy:
