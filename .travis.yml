@@ -8,9 +8,9 @@ cache:
   - $HOME/gutenberg
 
 install:
-  - test -d $HOME/gutenberg || git clone https://github.com/Keats/gutenberg.git $HOME/gutenberg
+  - test -d $HOME/gutenberg/.git || git clone https://github.com/Keats/gutenberg.git $HOME/gutenberg
   - cd $HOME/gutenberg; git submodule update --init; git submodule update --remote --merge
-  - cd $HOME/gutenberg/sublime_syntaxes; test -d Sublime-OftLisp || git clone https://github.com/oftlisp/Sublime-OftLisp.git
+  - cd $HOME/gutenberg/sublime_syntaxes; test -d Sublime-OftLisp/.git || git clone https://github.com/oftlisp/Sublime-OftLisp.git
   - cd $HOME/gutenberg/sublime_syntaxes/Sublime-OftLisp; git pull
   - cd $HOME/gutenberg/components/rendering; cargo run --example generate_sublime synpack ../../sublime_syntaxes ../../sublime_syntaxes/newlines.packdump ../../sublime_syntaxes/nonewlines.packdump
   - cd $HOME/gutenberg; cargo install
