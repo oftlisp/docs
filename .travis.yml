@@ -9,17 +9,11 @@ cache:
 
 install:
   - test -d $HOME/gutenberg || git clone https://github.com/Keats/gutenberg.git $HOME/gutenberg
-  - cd $HOME/gutenberg
-  - git submodule update --init
-  - git submodule update --remote --merge
-  - cd sublime_syntaxes
-  - test -d Sublime-OftLisp || git clone https://github.com/oftlisp/Sublime-OftLisp.git
-  - cd Sublime-OftLisp
-  - git pull
-  - cd ../../components/rendering
-  - cargo run --example generate_sublime synpack ../../sublime_syntaxes ../../sublime_syntaxes/newlines.packdump ../../sublime_syntaxes/nonewlines.packdump
-  - cd ../..
-  - cargo install
+  - cd $HOME/gutenberg; git submodule update --init; git submodule update --remote --merge
+  - cd $HOME/gutenberg/sublime_syntaxes; test -d Sublime-OftLisp || git clone https://github.com/oftlisp/Sublime-OftLisp.git
+  - cd $HOME/gutenberg/sublime_syntaxes/Sublime-OftLisp; git pull
+  - cd $HOME/gutenberg/components/rendering; cargo run --example generate_sublime synpack ../../sublime_syntaxes ../../sublime_syntaxes/newlines.packdump ../../sublime_syntaxes/nonewlines.packdump
+  - cd $HOME/gutenberg; cargo install
 
 script:
   - gutenberg build --base-url https://oftlisp.github.io/docs/
