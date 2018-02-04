@@ -13,7 +13,8 @@ install:
   - cd $HOME/gutenberg/sublime_syntaxes; test -d Sublime-OftLisp/.git || git clone https://github.com/oftlisp/Sublime-OftLisp.git
   - cd $HOME/gutenberg/sublime_syntaxes/Sublime-OftLisp; git pull
   - cd $HOME/gutenberg/components/rendering; cargo run --example generate_sublime synpack ../../sublime_syntaxes ../../sublime_syntaxes/newlines.packdump ../../sublime_syntaxes/nonewlines.packdump
-  - cd $HOME/gutenberg; cargo install
+  - cd $HOME/gutenberg; cargo install --force
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - gutenberg build --base-url https://oftlisp.github.io/docs/
