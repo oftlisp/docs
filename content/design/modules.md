@@ -30,33 +30,32 @@ We will use the following module as an example:
   fibonaccis
   is-fibonacci)
 
-(import-macros github.com/oftlisp/extstd/testing/quickcheck
-  quickcheck)
-
 (import github.com/oftlisp/extstd/streams
   stream-map
   stream-prepend
   stream-unfold
   stream-until)
+(import github.com/oftlisp/extstd/testing/quickcheck
+  quickcheck)
 
-(defn (next-fibonacci-state prev-state)
+(defn next-fibonacci-state (prev-state)
   (def before (snd prev-state))
   (def last   (fst prev-state))
   (def next (+ last before))
   (list next last))
 
-(defn (fibonaccis)
+(defn fibonaccis ()
   (->> (list 1 0)
     (stream-unfold next-fibonacci-state)
 	(stream-prepend 1)
 	(stream-map fst)))
 
-(defn (is-fibonacci n)
+(defn is-fibonacci (n)
   (->> (fibonaccis)
     (stream-until \(< n $))
 	(all \(/= $ n))))
 
-(quickcheck (all-fibs-are-fibs (n fixnum))
+(quickcheck all-fibs-are-fibs (n fixnum)
   (is-fibonacci (stream-nth n (fibonacci))))
 ```
 

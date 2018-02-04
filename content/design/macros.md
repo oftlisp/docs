@@ -8,8 +8,8 @@ Macros are imported separately from standard declarations; see the [`modules.md`
 
 ## Macro Processing
 
-When a module is loaded, the first thing that occurs is that the `module` form (including exports), `import-macros`, and `import` forms are processed.
-The modules specified in the `import-macros` and `import` forms are then loaded.
+When a module is loaded, the `module` form and `import` forms are processed.
+The modules specified in the `import` forms are then loaded.
 
 The current module's macro list is then created, starting with the macros present in `std/prelude`, and then augmented with each of the imported macros in order.
 An implementation may then choose to prune any shadowed macros, although in practice this is likely to be irrelevant for performance.
@@ -20,10 +20,10 @@ If the head symbol is present in the macro list, its corresponding macro is invo
 The scope in which the macro is invoked contains only the declarations that have been imported.
 This may be changed in the future, but the primary issue with allowing macros to call arbitrary global items is that the module's AST is not yet created.
 After a macro is expanded, its output is inserted into the tree, and macro processing is run on it again.
-This means that an infinite-loop macro is trivially possible:
+This means that a macro that causes an infinite-loop in expansion is trivially possible:
 
 ```oftlisp
-(defmacro (infinite-loop)
+(defmacro infinite-loop ()
   '(infinite-loop))
 ```
 

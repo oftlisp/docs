@@ -34,7 +34,7 @@ FFI definitions are performed in a `def-ffi` block:
 Note that the macro block will involve parsing the specified headers; this happens during macro expansion, so there's effectively zero runtime overhead.
 This results in the following symbols being defined at the top level, with the given types:
 
-```oftlisp
+```
 foo-foo :: (fn ffi-int ffi-int ffi-int)
 foo-bar :: (fn (ffi-struct foo-bar) ffi-int ffi-ptrdiff-t)
 foo-baz :: (fn ffi-size-t (ffi-struct foo-bar))
@@ -42,13 +42,13 @@ foo-EDOM :: ffi-int
 foo-XYZZY :: (ffi-pointer ffi-char)
 ```
 
-A large number of utility functions are also defined, to convert the various C numeric types to and from OftLisp types.
+A large number of utility functions are also defined in `std/ffi`, to convert the various C numeric types to and from OftLisp types.
 Additionally, there are two string conversion functions, `ffi-cstr-to-string` and `ffi-bytes-to-string`.
 The former converts a null-terminated array of characters to a string.
 The latter also takes a length.
 They have the types:
 
-```oftlisp
+```
 ffi-cstr-to-string :: (fn string (ffi-pointer ffi-char))
 ffi-bytes-to-string :: (fn string (ffi-pointer ffi-char) ffi-size-t)
 ```
@@ -60,7 +60,10 @@ This module contains bindings to [libffi](https://sourceware.org/libffi/) and li
 A typical FFI call might look something like:
 
 ```oftlisp
-(import std/ffi/raw (dlopen dlsym ffi-call make-cif))
+(import std/ffi/raw dlopen
+  dlsym
+  ffi-call
+  make-cif)
 
 (def cif (make-cif 'double '(double)))
 
