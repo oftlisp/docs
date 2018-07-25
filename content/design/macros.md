@@ -27,23 +27,27 @@ This means that a macro that causes an infinite-loop in expansion is trivially p
   '(infinite-loop))
 ```
 
-If a `progn` form is found at the top level after macro expansion, it is "spliced in." For example:
+If a `macro-multiple` form is found inside a `progn` (or `progn`-like context) after macro expansion, it is "spliced in." For example:
 
 ```oftlisp
-(def alpha 1)
-(progn
-  (def beta 2)
-  (def gamma 3))
-(def delta 4)
+(defn foo ()
+  (def alpha 1)
+  (macro-multiple
+    (def beta 2)
+    (def gamma 3))
+  (def delta 4))
 ```
 
 would become
 
 ```oftlisp
-(def alpha 1)
-(def beta 2)
-(def gamma 3)
-(def delta 4)
+(defn foo ()
+  (def alpha 1)
+  (def beta 2)
+  (def gamma 3)
+  (def delta 4))
 ```
+
+It is an error for a `macro-multiple` form to appear in a non-`progn`-like context.
 
 Lastly, if a `defmacro` is found at the top level after all the previous steps, it is parsed and added to the macro list.

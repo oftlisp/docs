@@ -19,8 +19,7 @@ There must then be two macros in scope, with names of the form `pat-*-matches?` 
 `pat-*-matches?` is called with two arguments, the tail of the pattern and the name of the variable whose value is being matched against.
 It should emit code for an expression that evaluates to a boolean.
 
-`pat-*-bind` is called with the same two arguments, plus a third, which is an expression to evaluate.
-It should emit an expression that creates the appropriate bindings, then evaluates the expression.
+`pat-*-bind` is called with the same two arguments, and should emit an expression that creates the appropriate bindings.
 The emitted code may result in undefined behavior if the corresponding `pat-*-matches?` code would return false.
 
 ### quote
