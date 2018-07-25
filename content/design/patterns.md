@@ -16,10 +16,11 @@ If the symbol is not `_`, a binding is created with that name in scope.
 If a pattern is a symbol-headed list, the symbol at the head is used as the name of the pattern.
 There must then be two macros in scope, with names of the form `pat-*-matches?` and `pat-*-bind`, where `*` is replaced with name of the pattern.
 
-`pat-*-matches?` is called with two arguments, the tail of the pattern and the symbol being matched against.
+`pat-*-matches?` is called with two arguments, the tail of the pattern and the name of the variable whose value is being matched against.
 It should emit code for an expression that evaluates to a boolean.
 
-`pat-*-bind` is called with the same two arguments, and should emit a list of expressions that create the appropriate bindings for the expression.
+`pat-*-bind` is called with the same two arguments, plus a third, which is an expression to evaluate.
+It should emit an expression that creates the appropriate bindings, then evaluates the expression.
 The emitted code may result in undefined behavior if the corresponding `pat-*-matches?` code would return false.
 
 ### quote
