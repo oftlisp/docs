@@ -46,15 +46,18 @@ The code definining the `quote` pattern is reproduced here, as an example.
 The `quasiquote` pattern behaves largely as the `quasiquote` macro does, but with one crucial change -- an `unquote` or `unquote-splicing` form contains a pattern instead of an expressions.
 Correspondingly, only one `unquote-splicing` is allowed per list/vector.
 
-## defpattern
+## `defpattern` and `defpattern-quasiquote`
 
-`defpattern` is used to create simple pattern aliases.
-It takes three arguments, a pattern name, a list of arguments, and the pattern to expand to.
+`defpattern` is used to create patterns more easily by implementing patterns as aliases for each other.
+It takes two fixed arguments, a pattern name and a list of arguments, as well as a body that *evaluates to* the result patterns.
 As an example, here we define patterns `(E)` and `(T l x r)` for matching binary trees:
 
 ```oftlisp
-(defpattern E ()      'E)
-(defpattern T (l x r) `(T ,l ,x ,r))
+(defpattern E ()
+  ''E)
+(defpattern T (l x r)
+  (def body `(T ,l ,x ,r))
+  (list 'quasiquote body))
 
 (def example-tree (T (T E 1 E) 2 E))
 (progn
@@ -62,4 +65,15 @@ As an example, here we define patterns `(E)` and `(T l x r)` for matching binary
   (assert-eq x 1)
   (assert-eq y 2)
   (assert-eq z 'E))
+```
+
+This is complicated by the fact that it is not possible to unquote inside a nested quasiquote.
+Alternately, `defpattern-quasiquote` can be used to work around this issue, and in many cases to make pattern definitions trivial.
+It takes three arguments, a pattern name, a list of arguments, and an expression representing the quasiquoted pattern to expand to.
+
+As an example, here are the above `defpattern`s expressed as `defpattern-quasiquote`s:
+
+```oftlisp
+(defpattern-quasiquote E () E)
+(defpattern-quasiquote T (l x r) (T ,l ,x ,r))
 ```
