@@ -1,0 +1,76 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/bootstrapping/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/effects/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/ffi/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/macros/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/modules/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/notebook/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/patterns/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/type-system/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/oftos/filesystem/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/oftos/protocols/console/</loc>
+            
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/oftos/type-systems/</loc>
+            
+        </url>
+    
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/</loc>
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/design/</loc>
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/oftos/</loc>
+        </url>
+    
+        <url>
+            <loc>https://oftlisp.github.io/docs/oftos/protocols/</loc>
+        </url>
+    
+    
+</urlset>

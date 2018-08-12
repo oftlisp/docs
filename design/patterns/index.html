@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>Patterns &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></h1>
+<article><p>Pattern-matching is a pretty darn important feature for a language to have, so I wanna be pretty darn sure OftLisp's is well-designed.
+It's also rather useful, given OftLisp's more object-oriented data model, to have extensible pattern matching, where one can match fairly arbitrarily.
+Therefore, there are two types of patterns, literal and extensible.</p>
+<h2 id="literal-patterns">Literal Patterns</h2>
+<p>A literal pattern is just a symbol, to which anything will bind.
+If the symbol is not <code>_</code>, a binding is created with that name in scope.</p>
+<h2 id="extensible-patterns">Extensible Patterns</h2>
+<p>If a pattern is a symbol-headed list, the symbol at the head is used as the name of the pattern.
+There must then be two macros in scope, with names of the form <code>pat-*-matches?</code> and <code>pat-*-bind</code>, where <code>*</code> is replaced with name of the pattern.</p>
+<p><code>pat-*-matches?</code> is called with two arguments, the tail of the pattern and the name of the variable whose value is being matched against.
+It should emit code for an expression that evaluates to a boolean.</p>
+<p><code>pat-*-bind</code> is called with the same two arguments, and should emit an expression that creates the appropriate bindings.
+The emitted code may result in undefined behavior if the corresponding <code>pat-*-matches?</code> code would return false.</p>
+<h3 id="quote">quote</h3>
+<p>The <code>quote</code> pattern only matches a value that is literally identical to its pattern.
+For example, the following code panics if the call to <code>map</code> does not return <code>()</code>:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">def</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;() (</span><span style="background-color:#2b303b;color:#8fa1b3;">map </span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">+ </span><span style="background-color:#2b303b;color:#d08770;">nil</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre>
+<p>The code definining the <code>quote</code> pattern is reproduced here, as an example.</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defmacro </span><span style="background-color:#2b303b;color:#8fa1b3;">pat-quote-matches?</span><span style="background-color:#2b303b;color:#c0c5ce;"> (</span><span style="background-color:#2b303b;color:#bf616a;">pat sym</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">`(</span><span style="background-color:#2b303b;color:#8fa1b3;">equals</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">sym</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;,</span><span style="background-color:#2b303b;color:#bf616a;">pat</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defmacro </span><span style="background-color:#2b303b;color:#8fa1b3;">pat-quote-bind</span><span style="background-color:#2b303b;color:#c0c5ce;"> (</span><span style="background-color:#2b303b;color:#bf616a;">pat sym</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;())
+</span></pre><h3 id="quasiquote">quasiquote</h3>
+<p>The <code>quasiquote</code> pattern behaves largely as the <code>quasiquote</code> macro does, but with one crucial change -- an <code>unquote</code> or <code>unquote-splicing</code> form contains a pattern instead of an expressions.
+Correspondingly, only one <code>unquote-splicing</code> is allowed per list/vector.</p>
+<h2 id="defpattern"><code>defpattern</code> and <code>defpattern-quasiquote</code></h2>
+<p><code>defpattern</code> is used to create patterns more easily by implementing patterns as aliases for each other.
+It takes two fixed arguments, a pattern name and a list of arguments, as well as a body that <em>evaluates to</em> the result patterns.
+As an example, here we define patterns <code>(E)</code> and <code>(T l x r)</code> for matching binary trees:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">defpattern </span><span style="background-color:#2b303b;color:#bf616a;">E </span><span style="background-color:#2b303b;color:#c0c5ce;">()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;&#39;</span><span style="background-color:#2b303b;color:#bf616a;">E</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">defpattern </span><span style="background-color:#2b303b;color:#bf616a;">T </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">l </span><span style="background-color:#2b303b;color:#bf616a;">x r</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">body</span><span style="background-color:#2b303b;color:#c0c5ce;"> `(</span><span style="background-color:#2b303b;color:#8fa1b3;">T</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">l</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">x</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">r</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">list</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;</span><span style="background-color:#2b303b;color:#bf616a;">quasiquote body</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">example-tree </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">T </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">T </span><span style="background-color:#2b303b;color:#bf616a;">E </span><span style="background-color:#2b303b;color:#d08770;">1 </span><span style="background-color:#2b303b;color:#bf616a;">E</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#d08770;">2 </span><span style="background-color:#2b303b;color:#bf616a;">E</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">progn
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">def </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">T </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">T </span><span style="background-color:#2b303b;color:#bf616a;">_ x _</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#bf616a;">y z</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#bf616a;">example-tree</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">assert-eq </span><span style="background-color:#2b303b;color:#bf616a;">x </span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">assert-eq </span><span style="background-color:#2b303b;color:#bf616a;">y </span><span style="background-color:#2b303b;color:#d08770;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">assert-eq </span><span style="background-color:#2b303b;color:#bf616a;">z</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;</span><span style="background-color:#2b303b;color:#bf616a;">E</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre>
+<p>This is complicated by the fact that it is not possible to unquote inside a nested quasiquote.
+Alternately, <code>defpattern-quasiquote</code> can be used to work around this issue, and in many cases to make pattern definitions trivial.
+It takes three arguments, a pattern name, a list of arguments, and an expression representing the quasiquoted pattern to expand to.</p>
+<p>As an example, here are the above <code>defpattern</code>s expressed as <code>defpattern-quasiquote</code>s:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">defpattern-quasiquote </span><span style="background-color:#2b303b;color:#bf616a;">E </span><span style="background-color:#2b303b;color:#c0c5ce;">() </span><span style="background-color:#2b303b;color:#bf616a;">E</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">defpattern-quasiquote </span><span style="background-color:#2b303b;color:#bf616a;">T </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">l </span><span style="background-color:#2b303b;color:#bf616a;">x r</span><span style="background-color:#2b303b;color:#c0c5ce;">) (</span><span style="background-color:#2b303b;color:#8fa1b3;">T</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">l</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">x</span><span style="background-color:#2b303b;color:#c0c5ce;"> ,</span><span style="background-color:#2b303b;color:#bf616a;">r</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre></article>
+
+		</main>
+	</body>
+</html>

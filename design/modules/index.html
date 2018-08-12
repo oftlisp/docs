@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>The Module System &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></h1>
+<article><h2 id="packages-and-modules">Packages and Modules</h2>
+<p>In OftLisp, code is organized into packages and modules.
+Packages form the root of the import hierarchy, while the values form the leaves.</p>
+<p>For example, in the import path <code>std/io/paths/join-paths</code>, the package is <code>std</code>, the module is <code>io/paths</code>, and the imported value is <code>join-paths</code>.</p>
+<p>In OftLisp, each package is compiled as a single unit.
+A consequence of this is that two <em>packages</em> cannot depend on each other circularly.
+Two modules within the same package, however, may.</p>
+<h2 id="package-oftd"><code>package.oftd</code></h2>
+<p>At the root directory of each package, there is a file named <code>package.oftd</code>.
+This file defines the package's name, version, and dependencies.
+This file is documented on its own page.</p>
+<h2 id="package-organization">Package Organization</h2>
+<p>For a package named <code>foo</code>, an example directory structure might look like:</p>
+<ul>
+<li><code>foo</code>
+<ul>
+<li><code>package.oftd</code></li>
+<li><code>src</code>
+<ul>
+<li><code>bar.oft</code></li>
+<li><code>baz/</code>
+<ul>
+<li><code>quux.oft</code></li>
+</ul>
+</li>
+<li><code>baz.oft</code></li>
+<li><code>xyzzy.oft</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Each file corresponds to a module with a corresponding name.
+For example, the module <code>foo/bar</code> corresponds to the file <code>foo/src/bar.oft</code>.</p>
+<p>Assuming that <code>package.oftd</code> contains a <code>default-module</code> of <code>baz/quux</code>, imports from <code>foo</code> will resolve to <code>foo/baz/quux</code>.
+In this case, <code>foo/src/baz/quux.oft</code> should still be declared as <code>foo/baz/quux</code>.</p>
+<h2 id="module-organization">Module Organization</h2>
+<p>A module starts with a <code>module</code> statement, giving the module's name and its exported values.
+Next follow a series of <code>import</code> statements, giving the module name and the values to import.</p>
+<p>In either case, the list may be replaced with the symbol <code>*</code>, meaning export all or import all.</p>
+<p>For example:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">module </span><span style="background-color:#2b303b;color:#c0c5ce;">foo/bar
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">say-hello</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">import </span><span style="background-color:#2b303b;color:#c0c5ce;">foo/baz
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">say-a-thing</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">import </span><span style="background-color:#2b303b;color:#c0c5ce;">foo/xyzzy *)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defn </span><span style="background-color:#2b303b;color:#8fa1b3;">say-hello</span><span style="background-color:#2b303b;color:#c0c5ce;"> ()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#65737e;">; get-message is imported from foo/xyzzy.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">say-a-thing </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">get-message</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;</span><span style="background-color:#2b303b;color:#bf616a;">hello</span><span style="background-color:#2b303b;color:#c0c5ce;">)))
+</span></pre></article>
+
+		</main>
+	</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>Effect Systems &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></h1>
+<article><p>OftLisp is a strict language, with side effects.
+Nonetheless, most effects are not explicitly present.
+The main examples are errors, (mutable) state, and nondeterminism.
+The traditional (in Haskell, at least) approach to modelling these effects (possibly in composition) is that of monads and monad transformer stacks.
+However, in a dynamically typed setting, monad transformer stacks are awkward to use -- since one doesn't have types to help dispatch the <code>lift</code> function, one must have, for example, a <code>lift-error-through-state-to-nondet</code> function.
+There are alternate approaches, including Kleisli Functors and Algebraic Effects.</p>
+<h2 id="monads">Monads</h2>
+<p>Benefits:</p>
+<ul>
+<li>Familiar <code>do</code>-notation</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Harder to explain than &quot;composition of functions with effects&quot;</li>
+<li>(Actually, could probably teach with Kleisli composition first, then monad bind)</li>
+</ul>
+<h2 id="algebraic-effects">Algebraic Effects</h2>
+<p>Benefits:</p>
+<ul>
+<li>Cleaner than a monad transformer stack</li>
+<li>Looks actually possible to implement in a dynamic setting...</li>
+</ul>
+<p>Mixed?</p>
+<ul>
+<li>Compiles to CPS</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Requires a base monad</li>
+</ul>
+<h2 id="kleisli-functors">Kleisli Functors</h2>
+<p>Benefits:</p>
+<ul>
+<li>Can abstract inner effect representation completely
+<ul>
+<li>Instead of <code>(a -&gt; State b)</code>, can write <code>(StateKA a b)</code></li>
+</ul>
+</li>
+<li>Simpler laws, rewrite process is fairly intuitive</li>
+<li>Models a category more-or-less explicitly</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li><code>kmap</code> still needs to be created for transformer stacks</li>
+<li><code>do</code>-notation becomes a lot more complex</li>
+</ul>
+</article>
+
+		</main>
+	</body>
+</html>

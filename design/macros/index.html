@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>The Macro System &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></h1>
+<article><p>OftLisp's macros are to a large degree based on those of Common Lisp; they use <code>defmacro</code>, and for now have no hygiene mechanism.</p>
+<p>Macros are imported separately from standard declarations; see the <a href="https://oftlisp.github.io/docs/design/macros/modules.html"><code>modules.md</code></a> document for more details.</p>
+<h2 id="macro-processing">Macro Processing</h2>
+<p>When a module is loaded, the <code>module</code> form and <code>import</code> forms are processed.
+The modules specified in the <code>import</code> forms are then loaded.</p>
+<p>The current module's macro list is then created, starting with the macros present in <code>std/prelude</code>, and then augmented with each of the imported macros in order.
+An implementation may then choose to prune any shadowed macros, although in practice this is likely to be irrelevant for performance.
+The body of the module is then processed, with the following simple algorithm:</p>
+<p>As each form is encountered, the tree is walked downwards, looking up each symbol-headed list form in the macro list.
+If the head symbol is present in the macro list, its corresponding macro is invoked.
+The scope in which the macro is invoked contains only the declarations that have been imported.
+This may be changed in the future, but the primary issue with allowing macros to call arbitrary global items is that the module's AST is not yet created.
+After a macro is expanded, its output is inserted into the tree, and macro processing is run on it again.
+This means that a macro that causes an infinite-loop in expansion is trivially possible:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defmacro </span><span style="background-color:#2b303b;color:#8fa1b3;">infinite-loop</span><span style="background-color:#2b303b;color:#c0c5ce;"> ()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">&#39;(</span><span style="background-color:#2b303b;color:#8fa1b3;">infinite-loop</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre>
+<p>If a <code>macro-multiple</code> form is found inside a <code>progn</code> (or <code>progn</code>-like context) after macro expansion, it is &quot;spliced in.&quot; For example:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defn </span><span style="background-color:#2b303b;color:#8fa1b3;">foo</span><span style="background-color:#2b303b;color:#c0c5ce;"> ()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">alpha </span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">macro-multiple
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">beta </span><span style="background-color:#2b303b;color:#d08770;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">gamma </span><span style="background-color:#2b303b;color:#d08770;">3</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">delta </span><span style="background-color:#2b303b;color:#d08770;">4</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre>
+<p>would become</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">defn </span><span style="background-color:#2b303b;color:#8fa1b3;">foo</span><span style="background-color:#2b303b;color:#c0c5ce;"> ()
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">alpha </span><span style="background-color:#2b303b;color:#d08770;">1</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">beta </span><span style="background-color:#2b303b;color:#d08770;">2</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">gamma </span><span style="background-color:#2b303b;color:#d08770;">3</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">delta </span><span style="background-color:#2b303b;color:#d08770;">4</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span></pre>
+<p>It is an error for a <code>macro-multiple</code> form to appear in a non-<code>progn</code>-like context.</p>
+<p>Lastly, if a <code>defmacro</code> is found at the top level after all the previous steps, it is parsed and added to the macro list.</p>
+</article>
+
+		</main>
+	</body>
+</html>

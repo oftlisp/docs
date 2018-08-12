@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>Bootstrapping OftLisp &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></h1>
+<article><h2 id="stage-1">Stage 1: <code>oftb</code> and <code>oftcesk</code></h2>
+<p><code>oftb</code> is an interpreter written in Rust, using a naive interpretation model.
+Since it doesn't have tail-call, it's very slow and often overflows the stack on medium-sized programs.
+However, it is capable of macro expansion.</p>
+<p><code>oftcesk</code> is a CESK-semantics-based interpreter, inspired by <a href="http://matt.might.net/articles/cesk-machines/">Writing an interpreter, CESK-style</a>.
+It does not contain a language frontend; instead it runs a bytecode produced by <code>oftb</code>.</p>
+<h2 id="stage-2">Stage 2: <code>oftc-bootstrap</code></h2>
+<p><code>oftc</code> is an OftLisp-to-LLVM compiler written in OftLisp.
+The <code>oftc-bootstrap</code> backend is used as a surrogate for proper FFI; instead, it outputs LLVM 3.9 IR in textual form.</p>
+<h2 id="stage-3">Stage 3: <code>oftc</code></h2>
+<p>Once <code>oftc-bootstrap</code> is self-hosting, it makes sense to develop more backends.
+A <code>std/ffi</code>-using <a href="https://github.com/stoklund/cretonne">cretonne</a> or LLVM backend is the first priority.
+At that point, the compiler is &quot;finished.&quot;</p>
+</article>
+
+		</main>
+	</body>
+</html>

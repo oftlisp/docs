@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>FFI &ndash; OftLisp Documentation</title>
+
+		<link rel="stylesheet" href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;main.css">
+	</head>
+	<body>
+		<nav>
+			<ul>
+	
+	
+	<li>
+		<span>Design Documents</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;bootstrapping&#x2F;">Bootstrapping OftLisp</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;type-system&#x2F;">Composable Type Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;effects&#x2F;">Effect Systems</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;notebook&#x2F;">Notebook</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;patterns&#x2F;">Patterns</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;macros&#x2F;">The Macro System</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;modules&#x2F;">The Module System</a></li>
+	
+	
+</ul>
+	</li>
+	
+	<li>
+		<span>OftOS</span>
+		<ul>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;filesystem&#x2F;">Filesystem</a></li>
+	
+	<li><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;oftos&#x2F;type-systems&#x2F;">Useful Type Systems</a></li>
+	
+	
+</ul>
+	</li>
+	
+</ul>
+		</nav>
+		<main>
+			
+<h1 class="title"><a href="https:&#x2F;&#x2F;oftlisp.github.io&#x2F;docs&#x2F;design&#x2F;ffi&#x2F;">FFI</a></h1>
+<article><h2 id="high-level">High-level</h2>
+<p>A high-level FFI package is provided at <code>std/ffi</code>.
+It supports the standard set of signed and unsigned integers of various sizes (1, 2, 4, and 8 bytes), as well as <code>size_t</code>, <code>ptrdiff_t</code>, etc.
+FFI definitions are performed in a <code>def-ffi</code> block:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">def-ffi </span><span style="background-color:#2b303b;color:#bf616a;">foo
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">options
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">define </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">ENABLE_BAR</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;) </span><span style="background-color:#2b303b;color:#65737e;">; Add -DENABLE_BAR flag.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">include-path </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">/usr/include/quux</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;) </span><span style="background-color:#2b303b;color:#65737e;">; Add -I /usr/include/quux flag.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">link </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">foo</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;) </span><span style="background-color:#2b303b;color:#65737e;">; Add libfoo.so/foo.dll to symbol search list.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">pkg-config </span><span style="background-color:#2b303b;color:#bf616a;">libfoo</span><span style="background-color:#2b303b;color:#c0c5ce;">)) </span><span style="background-color:#2b303b;color:#65737e;">; Add flags from pkg-config --cflags and
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                         </span><span style="background-color:#2b303b;color:#65737e;">; add libraries from pkg-config --libs to symbol
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                         </span><span style="background-color:#2b303b;color:#65737e;">; search list.
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">fn </span><span style="background-color:#2b303b;color:#bf616a;">foo </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">int </span><span style="background-color:#2b303b;color:#bf616a;">int</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#bf616a;">int</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#65737e;">; int foo(int, int);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">struct </span><span style="background-color:#2b303b;color:#bf616a;">bar      </span><span style="background-color:#2b303b;color:#65737e;">; typedef struct {
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">a </span><span style="background-color:#2b303b;color:#bf616a;">int</span><span style="background-color:#2b303b;color:#c0c5ce;">)        </span><span style="background-color:#2b303b;color:#65737e;">;     int a;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">    </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">b </span><span style="background-color:#2b303b;color:#bf616a;">ptrdiff-t</span><span style="background-color:#2b303b;color:#c0c5ce;">)) </span><span style="background-color:#2b303b;color:#65737e;">;     ptrdiff_t b;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                   </span><span style="background-color:#2b303b;color:#65737e;">; } bar;
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">fn </span><span style="background-color:#2b303b;color:#bf616a;">baz </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">bar*</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#bf616a;">size-t</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#65737e;">; size_t baz(bar*);
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">macro </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">&lt;errno.h&gt;</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#bf616a;">EDOM int</span><span style="background-color:#2b303b;color:#c0c5ce;">) </span><span style="background-color:#2b303b;color:#65737e;">; There&#39;s a macro EDOM in the system errno.h,
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                               </span><span style="background-color:#2b303b;color:#65737e;">; with an intish type
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">macro </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">foo.h</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot; </span><span style="background-color:#2b303b;color:#bf616a;">XYZZY char*</span><span style="background-color:#2b303b;color:#c0c5ce;">)) </span><span style="background-color:#2b303b;color:#65737e;">; There&#39;s a macro XYZZY defined in a local
+</span><span style="background-color:#2b303b;color:#c0c5ce;">                               </span><span style="background-color:#2b303b;color:#65737e;">; header foo.h, with a char* type.
+</span></pre>
+<p>Note that the macro block will involve parsing the specified headers; this happens during macro expansion, so there's effectively zero runtime overhead.
+This results in the following symbols being defined at the top level, with the given types:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">foo-foo :: (fn ffi-int ffi-int ffi-int)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">foo-bar :: (fn (ffi-struct foo-bar) ffi-int ffi-ptrdiff-t)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">foo-baz :: (fn ffi-size-t (ffi-struct foo-bar))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">foo-EDOM :: ffi-int
+</span><span style="background-color:#2b303b;color:#c0c5ce;">foo-XYZZY :: (ffi-pointer ffi-char)
+</span></pre>
+<p>A large number of utility functions are also defined in <code>std/ffi</code>, to convert the various C numeric types to and from OftLisp types.
+Additionally, there are two string conversion functions, <code>ffi-cstr-to-string</code> and <code>ffi-bytes-to-string</code>.
+The former converts a null-terminated array of characters to a string.
+The latter also takes a length.
+They have the types:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">ffi-cstr-to-string :: (fn string (ffi-pointer ffi-char))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">ffi-bytes-to-string :: (fn string (ffi-pointer ffi-char) ffi-size-t)
+</span></pre><h2 id="low-level-dynamic-ffi-calls">Low-Level Dynamic FFI Calls</h2>
+<p>FFI in OftLisp may be implemented with the <code>std/ffi/raw</code> module.
+This module contains bindings to <a href="https://sourceware.org/libffi/">libffi</a> and libdl.
+A typical FFI call might look something like:</p>
+<pre style="background-color:#2b303b">
+<span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">import </span><span style="background-color:#2b303b;color:#c0c5ce;">std/ffi/raw </span><span style="background-color:#2b303b;color:#bf616a;">dlopen
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">dlsym
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">ffi-call
+</span><span style="background-color:#2b303b;color:#c0c5ce;">  </span><span style="background-color:#2b303b;color:#bf616a;">make-cif</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">cif </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">make-cif</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;</span><span style="background-color:#2b303b;color:#bf616a;">double</span><span style="background-color:#2b303b;color:#c0c5ce;"> &#39;(</span><span style="background-color:#2b303b;color:#8fa1b3;">double</span><span style="background-color:#2b303b;color:#c0c5ce;">)))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">libc </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">dlopen </span><span style="background-color:#2b303b;color:#d08770;">nil</span><span style="background-color:#2b303b;color:#c0c5ce;">))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#b48ead;">def </span><span style="background-color:#2b303b;color:#bf616a;">cos </span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">dlsym </span><span style="background-color:#2b303b;color:#bf616a;">libc </span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;</span><span style="background-color:#2b303b;color:#a3be8c;">cos</span><span style="background-color:#2b303b;color:#c0c5ce;">&quot;))
+</span><span style="background-color:#2b303b;color:#c0c5ce;">
+</span><span style="background-color:#2b303b;color:#c0c5ce;">(</span><span style="background-color:#2b303b;color:#8fa1b3;">call </span><span style="background-color:#2b303b;color:#bf616a;">cif cos </span><span style="background-color:#2b303b;color:#d08770;">1.234</span><span style="background-color:#2b303b;color:#c0c5ce;">)
+</span></pre>
+<p>This interface is significantly slower than a compiled FFI call, but also much more flexible -- the name of the function need not statically be determined, and neither does the library they are loaded from, or their type.</p>
+<h2 id="compiled-ffi-calls">Compiled FFI Calls</h2>
+<p>It is of course possible to compile an FFI call, and <code>oftc</code> does.
+In this case, the library will be dynamically <em>linked</em> instead of dynamically loaded.
+The largest distinction is that an error due to a library not being present will happen on program initialization rather than on the attempted use of one of the functions.</p>
+<p>This presents an issue when a library is intended as an optional feature.
+This is simply not possible when dynamic linking is used.
+Therefore, one supported option to the <code>options</code> clause in <code>def-ffi</code> is <code>optional</code>.
+When this option is present, the functions emitted will always be the ones based on <code>std/ffi/raw</code>.
+When it is not, <code>oftc</code> will modify <code>def-ffi</code> to cause it to emit special stubs that call the requested foreign functions.</p>
+</article>
+
+		</main>
+	</body>
+</html>
