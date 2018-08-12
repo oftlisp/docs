@@ -4,6 +4,7 @@ title = "OftLisp Documentation"
 description = "The non-generated documentation for OftLisp."
 
 highlight_code = true
+extra_syntaxes = ["syntaxes/Sublime-OftLisp"]
 
 [extra]
 # Put all your custom variables here
